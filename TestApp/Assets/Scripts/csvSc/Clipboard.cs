@@ -12,7 +12,7 @@ public class Clipboard : MonoBehaviour
 
         for (int i = 0; i < data_Dialog.Count; i++) 
         { 
-            print(data_Dialog[i]["question"].ToString()); 
+            //print(data_Dialog[i]["question"].ToString()); 
         }
     }
 }
