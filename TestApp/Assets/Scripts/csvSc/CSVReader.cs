@@ -16,7 +16,6 @@ public class CSVReader
         TextAsset data = Resources.Load("csv/"+file) as TextAsset;
 
         var lines = Regex.Split(data.text, LINE_SPLIT_RE);
-
         if (lines.Length <= 1) return list;
 
         var header = Regex.Split(lines[0], SPLIT_RE);

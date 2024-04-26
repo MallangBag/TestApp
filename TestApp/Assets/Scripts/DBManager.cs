@@ -12,12 +12,11 @@ public class DBManager : MonoBehaviour
     public string find1 = "FIND1";
     public string find2 = "FIND2";
     
-    [SerializeField]
     private Toggle[] titleToggles;
-    [SerializeField]
     private Toggle[] optionToggles;
-    private string[] titleToggleNames;
-    private string[] optionToggleNames;
+    
+    private static string[] titleToggleNames;
+    private static string[] optionToggleNames;
     
     //ÀúÀå¿ë; ²Ú ´­·¶´Â°¡ È®ÀÎ / PressButton.cs¶û ¿¬µ¿
     private bool isClick;
