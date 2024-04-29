@@ -1,34 +1,53 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class MainManager : MonoBehaviour
 {
+    //Title 정보 가져오기 및 저장
     private DBManager dBManager;
     [SerializeField]
     private List<string> titleToggleNames;
     [SerializeField]
     private List<string> optionToggleNames;
 
+    //파싱
     List<Dictionary<string, object>> data_Dialog;
 
-    //csv 파싱으로 question 가져오기
+    //문제 만들기
+    //문제 뽑기 (랜덤)
+    int randomOption;
+    int randomNum;
+    int randomTitle;
+    //문제
+    [SerializeField]
+    private TextMeshProUGUI textQuestion;
+    //답
+    [SerializeField]
+    private GameObject mcObj;
+    [SerializeField]
+    private GameObject saObj;
+
+
     private void Start()
     {
-        dBManager = DBManager.Instance;
-        titleToggleNames = new List<string>();
-        optionToggleNames = new List<string>();
-        data_Dialog = new List<Dictionary<string, object>>();
-        
         LoadNames();
-        MakeQuestion();
+        Making();
+    }
+    private void InitializeSettings()
+    {
+
     }
 
     private void LoadNames()
     {
-        Debug.Log(dBManager.Title_Names.Length);
+        dBManager = DBManager.Instance;
+        titleToggleNames = new List<string>();
+        optionToggleNames = new List<string>();
+
         for (int i = 0; i < dBManager.Title_Names.Length; i++)
         {
             if (PlayerPrefs.GetInt(dBManager.Title_Names[i]) == CONST.TRUE)
@@ -46,21 +65,46 @@ public class MainManager : MonoBehaviour
     }
 
     //메인 화면 보이게 함
-    private void MakeQuestion()
+    private void Making()
     {
-        int optionRandom = Random.Range(0, optionToggleNames.Count - 1);    //문제 항목 랜덤
-        int titleRandom = Random.Range(0, titleToggleNames.Count - 1);      //문제 유형 랜덤
-        int numRandom = 0;
-        while(true)
+        randomOption = Random.Range(0, optionToggleNames.Count);    //문제 항목 랜덤
+        randomTitle = Random.Range(0, titleToggleNames.Count);      //문제 유형 랜덤
+        if (Resources.Load("csv/" + optionToggleNames[randomOption] + "_" + titleToggleNames[randomTitle]) != null)
         {
-            if (Resources.Load("csv/" + optionToggleNames[optionRandom] + "_" + titleToggleNames[titleRandom]) != null)
-            {
-                numRandom = Random.Range(1, data_Dialog.Count);
-                print(data_Dialog[numRandom]["question"].ToString());
+            data_Dialog = CSVReader.Read(optionToggleNames[randomOption] + "_" + titleToggleNames[randomTitle]);
+            randomNum = Random.Range(0, data_Dialog.Count);
+        }
+
+        Question();
+        Answer();
+    }
+
+    //문제 생성
+    private void Question()
+    {
+        textQuestion.text = data_Dialog[randomNum][CONST.QUESTION].ToString();
+    }
+    //정답 생성
+    private void Answer()
+    {
+        switch (titleToggleNames[randomTitle])
+        {
+            case CONST.MC:
+                mcObj.SetActive(true);
                 break;
-            }
+            case CONST.SA:
+                saObj.SetActive(true);
+                break;
+            default:
+                break;
         }
     }
+    //코멘트 생성
+    private void Comment()
+    {
+
+    }
+
     #region 예시용 CSVLoad
     public void CSVLoad()
     {
@@ -76,7 +120,6 @@ public class MainManager : MonoBehaviour
                         {
                             Debug.Log(optionToggleNames[j] + "_" + titleToggleNames[i] + "; Load함");
                             data_Dialog = CSVReader.Read(optionToggleNames[j] + "_" + titleToggleNames[i]);
-                            MakeQuestion();
                         }
                         else
                         {
